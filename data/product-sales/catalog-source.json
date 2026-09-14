@@ -1,0 +1,27 @@
+{
+  "TR-001": {
+    "vendor": "North Ridge",
+    "name": "Trail Pack",
+    "size": "18 L"
+  },
+  "TR-002": {
+    "vendor": "North Ridge",
+    "name": "Camp Mug",
+    "size": "350 ml"
+  },
+  "TR-003": {
+    "vendor": "North Ridge",
+    "name": "Trekking Pole",
+    "size": "110 cm"
+  },
+  "TR-004": {
+    "vendor": "North Ridge",
+    "name": "Rain Shell",
+    "size": "M"
+  },
+  "TR-005": {
+    "vendor": "North Ridge",
+    "name": "Headlamp",
+    "size": "300 lm"
+  }
+}
