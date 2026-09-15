@@ -1,1 +1,42 @@
-<!doctype html><html><body><h1>Trail Pack product-sales fixture</h1><p>Incomplete synthetic baseline.</p></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Trail Pack — product sales (Sun–Sat weeks)</title>
+</head>
+<body>
+  <h1>Trail Pack product sales</h1>
+  <p>Weekly buckets run Sunday–Saturday. Labels show the full range, e.g. &ldquo;Sun 7 Apr – Sat 13 Apr&rdquo;.</p>
+  <table id="weeks">
+    <thead>
+      <tr><th>Week</th><th>Units</th><th>Revenue</th><th>Orders</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <p id="status"></p>
+  <script type="module">
+    import { renderProductSales } from './product-sales.js';
+
+    const tbody = document.querySelector('#weeks tbody');
+    const status = document.querySelector('#status');
+    try {
+      const res = await fetch('/api/product-sales');
+      const payload = await res.json();
+      for (const w of renderProductSales(payload)) {
+        const tr = document.createElement('tr');
+        const cells = [w.label, w.units, Number(w.revenue).toFixed(2), w.orders];
+        for (const value of cells) {
+          const td = document.createElement('td');
+          td.textContent = String(value);
+          tr.appendChild(td);
+        }
+        tbody.appendChild(tr);
+      }
+      status.textContent = `Weeks run ${payload.week_start}–${payload.week_end}. Rows: ${payload.integrity.rows}, week-start mismatches: ${payload.integrity.week_start_mismatches}.`;
+    } catch (err) {
+      status.textContent = 'Failed to load /api/product-sales';
+    }
+  </script>
+</body>
+</html>

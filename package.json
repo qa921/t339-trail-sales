@@ -3,6 +3,6 @@
   "private": true,
   "version": "0.0.1",
   "scripts": {
-    "build": "node -e \"require('fs').mkdirSync('dist',{recursive:true});require('fs').copyFileSync('public/index.html','dist/index.html')\""
+    "build": "node -e \"const fs=require('fs');fs.mkdirSync('dist',{recursive:true});for(const f of ['index.html','product-sales.js'])fs.copyFileSync('public/'+f,'dist/'+f)\""
   }
 }
