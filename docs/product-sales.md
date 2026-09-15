@@ -12,6 +12,15 @@ The fixture now uses Sunday-start (Sunday–Saturday) weeks end to end:
 - **UI**: `public/index.html` + `public/product-sales.js` render the weekly
   table with the same full-range labels.
 
+## Size presentation rule
+
+Sizes are shown **only when they disambiguate** a description shared by
+multiple SKUs (`resolveSizes` in `lib/product-sales-db.ts`). The UCI source
+provides no size metadata, so the API returns an empty `sizes` map plus a
+single `size_status` ("unavailable in source; sizes omitted") and the UI shows
+one note — never per-cell "N/A" noise. If size metadata ever becomes
+available, only SKUs with duplicated names will display a size.
+
 Preservation rules (no invented data): bundle rollups stay as stored
 (`bundles.json` is empty — unavailable in the UCI source), vendors stay empty,
 and SKU size metadata remains `null` with its documented status. Deployment

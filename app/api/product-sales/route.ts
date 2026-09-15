@@ -12,6 +12,7 @@ import {
   WEEK_END,
   aggregateWeekly,
   countWeekStartMismatches,
+  resolveSizes,
   type SeedRow,
 } from '../../../lib/product-sales-db';
 
@@ -26,12 +27,19 @@ const rows: SeedRow[] = [
 
 export async function GET() {
   const weeks = aggregateWeekly(rows);
+  // Sizes only where they separate duplicate variants; source has none.
+  const { sizes, status: sizeStatus } = resolveSizes(
+    names as Record<string, string>,
+    catalog.size_metadata as Record<string, string | null> | null,
+  );
   return Response.json({
     week_start: WEEK_START, // 'sunday'
     week_end: WEEK_END,     // 'saturday'
     weeks,                  // Sunday–Saturday buckets with full-range labels
     sales: rows,            // preserved per-row history with week_start_sunday
     names,
+    sizes,                  // filtered: only disambiguating sizes (empty when source has none)
+    size_status: sizeStatus,
     vendors: vendorsFile.vendors, // preserved as-is (unavailable in UCI source)
     bundles: bundlesFile.bundles, // preserved as-is (unavailable in UCI source)
     size_metadata: catalog.size_metadata, // null: unavailable in UCI source; not invented

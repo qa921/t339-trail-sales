@@ -93,6 +93,43 @@ export function countWeekStartMismatches(rows: SeedRow[]): number {
   return rows.filter((r) => r.week_start_sunday !== weekStartSunday(r.InvoiceDate)).length;
 }
 
+// --- Size presentation rule -------------------------------------------------
+// A size is only shown when it helps tell apart repeated names/variants
+// (same description shared by multiple SKUs). When the source provides no
+// size metadata at all, sizes stay omitted and a single status explains it —
+// no per-row "N/A" noise.
+
+export const SIZE_UNAVAILABLE_STATUS = 'unavailable in source; sizes omitted';
+
+// Descriptions shared by more than one SKU (candidates for size labels).
+export function duplicateDescriptions(names: Record<string, string>): Set<string> {
+  const counts = new Map<string, number>();
+  for (const desc of Object.values(names)) {
+    const key = desc.trim();
+    counts.set(key, (counts.get(key) ?? 0) + 1);
+  }
+  return new Set([...counts.entries()].filter(([, n]) => n > 1).map(([desc]) => desc));
+}
+
+// Keep only sizes that disambiguate a duplicated description.
+export function resolveSizes(
+  names: Record<string, string>,
+  sizeMetadata: Record<string, string | null> | null,
+): { sizes: Record<string, string>; status: string } {
+  if (!sizeMetadata) {
+    return { sizes: {}, status: SIZE_UNAVAILABLE_STATUS };
+  }
+  const dupes = duplicateDescriptions(names);
+  const sizes: Record<string, string> = {};
+  for (const [code, size] of Object.entries(sizeMetadata)) {
+    const desc = names[code];
+    if (size && desc && dupes.has(desc.trim())) {
+      sizes[code] = size;
+    }
+  }
+  return { sizes, status: 'shown only where sizes disambiguate duplicate variants' };
+}
+
 export function seedOnFirstRead() {
   return { seeded: true, guard: 'v2-sunday-start' };
 }

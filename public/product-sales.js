@@ -23,3 +23,17 @@ export function renderProductSales(payload) {
     rows: w.rows,
   }));
 }
+
+// Size presentation rule: a size label is returned only when the API kept it
+// (i.e. it disambiguates a repeated name/variant). Otherwise null — renderers
+// must show nothing, not "N/A" noise. Availability is communicated once via
+// payload.size_status.
+export function sizeLabel(stockCode, payload) {
+  const sizes = (payload && payload.sizes) || {};
+  return sizes[stockCode] || null;
+}
+
+// One-line availability note for sizes, or null when sizes are in use.
+export function sizeStatusNote(payload) {
+  return (payload && payload.size_status) || null;
+}
